@@ -10,8 +10,15 @@
 </head>
 
 <body class="bg-gradient-to-r from-purple-900 via-purple-700 to-purple-500 min-h-screen flex justify-center items-center relative">
-    <div class="bg-white bg-opacity-30 rounded-lg shadow-md p-8 max-w-3xl w-full">
-        <div class="container">
+  <br>
+  <div class="bg-white bg-opacity-30 rounded-lg shadow-md p-8 max-w-3xl w-full max-h-500">
+    <div class="container grid justify-items-center">
+      <p class="text-white bold text-xl">====DISKONNECT - Private Temporary Chat Space=====</p>
+      <p class="text-white text-sm">Active Users : <span id="activeUserCount">0</span></p>
+      <p class="text-white text-sm">Total users this session : <span id="totalUserCount">0</span></p>
+      </div>
+    
+      <div class="container">
           <div class="flex">
             <div class="flex-1 pr-8 w-300px">
                 <div id="userList" class="bg-white bg-opacity-30 rounded-lg shadow-md p-4 overflow-y-auto max-h-80">
@@ -54,6 +61,12 @@
 
     <script src="/socket.io/socket.io.js"></script>
 <script>
+      function getRandomColor() {
+            var r = Math.floor(Math.random() * 256);
+            var g = Math.floor(Math.random() * 256);
+            var b = Math.floor(Math.random() * 256);
+            return '#' + r.toString(16).padStart(2, '0') + g.toString(16).padStart(2, '0') + b.toString(16).padStart(2, '0');
+        }
       
       const socket = io();
         const sendBtn = document.getElementById('sendBtn')
@@ -66,6 +79,11 @@
         })
         socket.on('user-connect',(message)=>{
           console.log(message)
+          let activeUserCount = document.getElementById('activeUserCount').innerHTML
+          document.getElementById('activeUserCount').innerHTML = Number(activeUserCount) + 1;
+          let totalUserCount = document.getElementById('totalUserCount').innerHTML
+          document.getElementById('totalUserCount').innerHTML = Number(totalUserCount) + 1;
+          
           const newUserDiv = document.createElement('div');
            newUserDiv.setAttribute('id',message);
             newUserDiv.classList.add('flex', 'items-center', 'mb-4', 'cursor-pointer');
@@ -91,6 +109,8 @@
           console.log("A user has been disconnected,trigger fired for user id : ",message)
           let element = document.getElementById(message);
 element.parentNode.removeChild(element);
+let activeUserCount = document.getElementById('activeUserCount').innerHTML
+          document.getElementById('activeUserCount').innerHTML = Number(activeUserCount) - 1;
         })
         socket.on('message',(data)=>{
        
@@ -101,9 +121,11 @@ element.parentNode.removeChild(element);
             const m = document.createElement('div')
             let msgTime = new Date();
             msgTime = msgTime.toLocaleTimeString();
+            let userColor = getRandomColor()
+
             m.innerHTML= `
             <div class="self-start bg-white rounded-lg shadow-sm p-2 mb-2 max-w-sm">
-                          <p class="text-blue-800"><b>${userID}</b></p>     
+                          <p  style="color : ${userColor}"><b>${userID}</b></p>     
                           <p class="text-gray-800">${message}</p>
                             <p class="text-xs text-gray-400">${msgTime}</p>
                         </div>
